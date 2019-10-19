@@ -3,7 +3,11 @@ project(Sokoban)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Sokoban main.cpp)
+set(SOKOBAN_MAIN Source/main.cpp Source/Game.cpp Source/Game.h)
+set(SOKOBAN_EVENTS Source/Events/EventHandler.cpp Source/Events/EventHandler.h)
+
+add_executable(Sokoban Source/main.cpp Source/Player.cpp Source/Player.h Source/Structs.h Source/Enums.h Source/Utils.cpp Source/Utils.h ${SOKOBAN_MAIN} ${SOKOBAN_EVENTS})
+
 
 find_package(SFML REQUIRED graphics)
 if (SFML_FOUND)
