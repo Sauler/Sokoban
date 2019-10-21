@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <physfs.h>
 
 int main() {
 	Game game("Sokoban");
@@ -6,4 +7,3 @@ int main() {
 
     return 0;
 }
-

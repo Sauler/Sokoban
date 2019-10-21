@@ -1,9 +1,11 @@
 #include <iostream>
+#include <utility>
 #include "Game.h"
+#include "SFML/Graphics/Sprite.hpp"
 
 Game::Game(std::string windowTitle) {
 	Init();
-	CreateWindow(windowTitle);
+	CreateWindow(std::move(windowTitle));
 	CenterWindow();
 }
 
@@ -25,10 +27,16 @@ void Game::CenterWindow() {
 }
 
 void Game::Run() {
+	resourcesManager->AddSearchPath("../Assets/Gfx/");
+	auto texture = resourcesManager->GetTexture("floor.png");
+	sf::Sprite sprite;
+	sprite.setTexture(texture);
+
 	while (window.isOpen()) {
 		eventHandler->HandleEvents(window);
 
 		window.clear();
+		window.draw(sprite);
 		window.display();
 	}
 }
