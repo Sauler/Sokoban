@@ -2,6 +2,7 @@
 #include <utility>
 #include "Game.h"
 #include "SFML/Graphics/Sprite.hpp"
+#include "Levels/Level.h"
 
 Game::Game(std::string windowTitle) {
 	Init();
@@ -31,6 +32,9 @@ void Game::Run() {
 	auto texture = resourcesManager->GetTexture("floor.png");
 	sf::Sprite sprite;
 	sprite.setTexture(texture);
+
+	Level lvl;
+	lvl.LoadFromFile("../Assets/Levels/level0.lvl");
 
 	while (window.isOpen()) {
 		eventHandler->HandleEvents(window);
