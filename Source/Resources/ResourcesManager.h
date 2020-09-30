@@ -16,6 +16,7 @@ public:
 private:
 	std::map<std::string, sf::Texture> textures;
 	std::vector<std::string> searchPaths;
+	const bool SearchInMainDirectory = true;
 };
 
 
