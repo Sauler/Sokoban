@@ -33,8 +33,6 @@ void Game::Run() {
 	sf::Sprite sprite;
 	sprite.setTexture(texture);
 
-	Level lvl;
-	lvl.LoadFromFile("../Assets/Levels/level0.lvl");
 
 	while (window.isOpen()) {
 		eventHandler->HandleEvents(window);
@@ -43,4 +41,8 @@ void Game::Run() {
 		window.draw(sprite);
 		window.display();
 	}
+}
+
+void Game::Cleanup() {
+    resourcesManager->UnloadAllTextures();
 }

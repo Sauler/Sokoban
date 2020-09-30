@@ -39,7 +39,7 @@ const sf::Texture &ResourcesManager::GetTexture(const std::string &name) {
 	return textures[name];
 }
 
-void ResourcesManager::DeleteTexture(const sf::Texture &texture) {
+void ResourcesManager::UnloadTexture(const sf::Texture &texture) {
 	for (auto it = textures.begin(); it != textures.end(); ++it) {
 		if (&texture == &it->second) {
 			textures.erase(it);
@@ -48,10 +48,14 @@ void ResourcesManager::DeleteTexture(const sf::Texture &texture) {
 	}
 }
 
-void ResourcesManager::DeleteTexture(const std::string &filename) {
+void ResourcesManager::UnloadTexture(const std::string &filename) {
 	auto it = textures.find(filename);
 	if (it != textures.end())
 		textures.erase(it);
+}
+
+void ResourcesManager::UnloadAllTextures() {
+    textures.clear();
 }
 
 void ResourcesManager::AddSearchPath(const std::string &directory) {

@@ -20,6 +20,7 @@ private:
 public:
 	Game(std::string windowTitle);
 	void Run();
+	void Cleanup();
 };
 
 
