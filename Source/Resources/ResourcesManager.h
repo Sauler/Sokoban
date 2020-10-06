@@ -7,6 +7,7 @@
 
 class ResourcesManager {
 public:
+    bool LoadTexture(const std::string& name);
 	const sf::Texture& GetTexture(const std::string& name);
 	void UnloadTexture(const sf::Texture &texture);
 	void UnloadTexture(const std::string &filename);

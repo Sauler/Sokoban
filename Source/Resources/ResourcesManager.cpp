@@ -2,40 +2,46 @@
 #include <filesystem>
 #include "ResourcesManager.h"
 
-const sf::Texture &ResourcesManager::GetTexture(const std::string &name) {
-	// Check, whether the texture already exists
-	for (auto texture : textures) {
-        if (name == texture.first) {
-            std::cout << "DEBUG_MESSAGE: " << name << " using existing texture.\n";
-            return texture.second;
-        }
-	}
+bool ResourcesManager::LoadTexture(const std::string &name) {
+//    std::cout << "DEBUG: Loading texture: " << name << std::endl;
 
-	sf::Texture texture;
+    // Check, whether the texture is already loaded
+    auto exists = textures.find(name) != textures.end();
+    if (exists)
+        return true;
 
-	// Search project's main directory
-	if (this->SearchInMainDirectory) {
-	    auto fileExists = std::filesystem::exists(name);
+    sf::Texture texture;
+
+    // Search project's main directory
+    if (this->SearchInMainDirectory) {
+        auto fileExists = std::filesystem::exists(name);
         if (fileExists && texture.loadFromFile(name)) {
             textures[name] = texture;
-            std::cout << "DEBUG_MESSAGE: " << name << " loading texture.\n";
-            return textures[name];
+            return true;
         }
     }
 
-	// If the texture has still not been found, search all registered directories
-	for (auto path : searchPaths) {
-	    auto fullPath = path + name;
+    // If the texture has still not been found, search all registered directories
+    for (auto path : searchPaths) {
+        auto fullPath = path + name;
         auto fileExists = std::filesystem::exists(fullPath);
         if (fileExists && texture.loadFromFile(fullPath)) {
             textures[name] = texture;
-            std::cout << "DEBUG_MESSAGE: " << name << " loading texture.\n";
-            return textures[name];
+            return true;
         }
-	}
+    }
 
-	std::cout << "GAME_ERROR: Texture was not found. It is filled with an empty texture.\n";
-	textures[name] = texture;
+    std::cout << "ERROR: Failed to load texture: " << name << std::endl;
+    textures[name] = texture;
+    return false;
+}
+
+const sf::Texture &ResourcesManager::GetTexture(const std::string &name) {
+	// If texture is not found then we will get empty texture here
+	auto textureLoaded = LoadTexture(name);
+	if (!textureLoaded)
+        return textures[name];
+
 	return textures[name];
 }
 
