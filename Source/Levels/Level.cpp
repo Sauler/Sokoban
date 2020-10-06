@@ -1,4 +1,5 @@
 #include "Level.h"
+#include "../Utils.h"
 #include <filesystem>
 #include <iostream>
 #include <fstream>
@@ -11,8 +12,38 @@ void Level::SetHeight(int height) {
 	this->height = height;
 }
 
-void Level::Draw(sf::RenderWindow window) {
+void Level::DrawStaticLevel(sf::RenderWindow* window, std::unique_ptr<ResourcesManager>& resourcesManager) {
+    auto staticLevel = GetLevel(resourcesManager);
 
+    for (auto drawable : staticLevel) {
+        window->draw(drawable.sprite);
+    }
+}
+
+std::vector<Drawable> Level::GetLevel(std::unique_ptr<ResourcesManager>& resourcesManager) {
+    std::vector<Drawable> result;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            auto tile = tiles.GetTile(x, y);
+            if (!Utils::IsStaticLevelTile(tile)) {
+                if (tile == TileType::Empty )
+                    continue;
+
+                tile = TileType::Floor;
+            }
+
+            auto textureName = Utils::TileToTextureName(tile);
+            if (textureName.empty())
+                continue;
+
+            auto texture = resourcesManager->GetTexture(textureName);
+            Drawable drawable;
+            drawable.position = sf::Vector2f(x * 32, y * 32);
+            drawable.texture = texture;
+            result.push_back(drawable);
+        }
+    }
+    return result;
 }
 
 void Level::LoadFromFile(std::string path) {
@@ -55,45 +86,46 @@ void Level::LoadFromFile(std::string path) {
 	std::string line;
 	tiles.columns = height;
 
+	int y = 0;
 	while (file >> line) {
-		auto tilesArray = LineToTilesArray(line);
+		auto tilesArray = Utils::LineToTilesArray(line);
 
-		for (int i = 0; i < tilesArray.size(); i++) {
-			tiles.tiles[i] = tilesArray[i];
+		for (int x = 0; x < tilesArray.size(); x++) {
+			tiles.SetTile(x, y, tilesArray[x]);
 		}
+		y++;
 	}
 
 	file.close();
 }
 
-std::vector<TileType> Level::LineToTilesArray(std::string line) {
-	std::vector<TileType> result;
-	for (auto c: line) {
-		switch (c) {
-			case 'E':
-				result.push_back(TileType::Empty);
-				break;
-			case '=':
-				result.push_back(TileType::Wall);
-				break;
-			case '.':
-				result.push_back(TileType::Floor);
-				break;
-			case 'X':
-				result.push_back(TileType::Target);
-				break;
-			case 'R':
-				result.push_back(TileType::Rock);
-				break;
-			case 'P':
-				result.push_back(TileType::Player);
-				break;
-			case 'N':
-				return result;
-		}
+sf::Vector2<int> Level::GetPlayerPositionOnLevel() {
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            auto tile = tiles.GetTile(x, y);
+            if (tile == TileType::Player)
+                return sf::Vector2<int>(x, y);
+        }
+    }
 
-
-	}
-
-	return result;
+    return sf::Vector2<int>(0, 0);
 }
+
+std::vector<sf::Vector2<int>> Level::GetRocksPositionOnLevel() {
+    std::vector<sf::Vector2<int>> result;
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            auto tile = tiles.GetTile(x, y);
+            if (tile == TileType::Rock)
+                result.emplace_back(x, y);
+        }
+    }
+
+    if (result.empty())
+        result.emplace_back(0, 0);
+
+    return std::vector<sf::Vector2<int>>();
+}
+
+

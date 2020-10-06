@@ -29,16 +29,20 @@ void Game::CenterWindow() {
 
 void Game::Run() {
 	resourcesManager->AddSearchPath("../Assets/Gfx/");
-	auto texture = resourcesManager->GetTexture("floor.png");
-	sf::Sprite sprite;
-	sprite.setTexture(texture);
+	resourcesManager->LoadTexture("floor.png");
+	resourcesManager->LoadTexture("player.png");
+	resourcesManager->LoadTexture("rock.png");
+	resourcesManager->LoadTexture("rock_done.png");
+	resourcesManager->LoadTexture("target.png");
+	resourcesManager->LoadTexture("wall.png");
 
+    Level lvl;
+    lvl.LoadFromFile("../Assets/Levels/level0.lvl");
 
 	while (window.isOpen()) {
 		eventHandler->HandleEvents(window);
-
 		window.clear();
-		window.draw(sprite);
+        lvl.DrawStaticLevel(&window, resourcesManager);
 		window.display();
 	}
 }
